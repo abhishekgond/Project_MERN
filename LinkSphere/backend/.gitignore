@@ -6,3 +6,6 @@ build/
 coverage/
 *.log
 npm-debug.log*
+
+README.md/
+./image.png
