@@ -1,6 +1,6 @@
 # LinkSphere
 
-A full-stack LinkedIn clone built with the MERN (MongoDB, Express, React, Node.js) stack.
+A full-stack MERN Project (MongoDB, Express, React, Node.js) stack.
 
 ## 🚀 Features
 
@@ -29,8 +29,8 @@ A full-stack LinkedIn clone built with the MERN (MongoDB, Express, React, Node.j
 **Other Tools:**
 
 - JWT for authentication
-** npm install jsonwebtoken**
-![alt text](image.png)
+  ** npm install jsonwebtoken**
+  ![alt text](image.png)
 - Multer / Cloudinary for file uploads
 - Socket.IO for real-time messaging (optional)
 
