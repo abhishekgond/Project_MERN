@@ -1,0 +1,5 @@
+<svg width="200" height="50" xmlns="http://www.w3.org/2000/svg">
+  <text x="10" y="35" font-size="36" font-family="Arial, sans-serif" fill="#0077b5">
+    <tspan font-weight="bold">Link</tspan><tspan font-weight="normal" dx="-2">Sphere</tspan>
+  </text>
+</svg>

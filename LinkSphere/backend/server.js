@@ -3,12 +3,19 @@ import dotenv from "dotenv";
 import { dbconnect } from "./config/dbconnect.js";
 import authRoutes from "./routes/auth_routes.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json()); // Taking value from body
 app.use(cookieParser()); // using cookieParser
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use("/api/auth", authRoutes);
 app.listen(PORT, () => {
   dbconnect();
