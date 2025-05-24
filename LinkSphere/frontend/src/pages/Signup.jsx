@@ -3,10 +3,12 @@ import axios from "axios";
 import logo from "../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
 import { AuthDataContext } from "../context/AuthContext";
+import { userDataContext } from "../context/UserContext";
 export const Signup = () => {
   const [show, setShow] = useState(false); // your show state for toggling password visibility
   const navigate = useNavigate();
   const { serverUrl } = useContext(AuthDataContext); // to Accesing context api
+  const { userData, setUserData } = useContext(userDataContext);
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
@@ -34,7 +36,9 @@ export const Signup = () => {
         },
         { withCredentials: true }
       );
-      console.log(serverUrl);
+      setUserData(res.data.user);
+      navigate("/");
+      console.log(res);
       setMessage(res.data.message || "Signup successful!");
       setLoding(false);
       setFirstName("");

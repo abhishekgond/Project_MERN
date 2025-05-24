@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import genToken from "../config/token.js";
+import genToken  from "../config/token.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 export const signUp = async (req, res) => {
@@ -92,7 +92,7 @@ export const logIn = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = await genToken(user._id);
+    const token = genToken(user._id);
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000, // mili second

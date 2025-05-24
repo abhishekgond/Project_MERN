@@ -4,6 +4,7 @@ import { dbconnect } from "./config/dbconnect.js";
 import authRoutes from "./routes/auth_routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import userRouter from "./routes/user.routes.js";
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -17,6 +18,7 @@ app.use(
   })
 );
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRouter);
 app.listen(PORT, () => {
   dbconnect();
   console.log("server is running on port 3000");
