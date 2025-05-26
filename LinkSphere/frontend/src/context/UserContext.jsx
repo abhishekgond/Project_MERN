@@ -16,15 +16,17 @@ function UserContext({ children }) {
         withCredentials: true,
       });
       setUserData(result.data);
+      // console.log(result.data);
+      return;
     } catch (error) {
+      console.log(error);
       setUserData(null);
-      // console.log(error);
     }
   };
 
   useEffect(() => {
     getCurrentUser();
-  });
+  }, []);
   const value = { userData, setUserData };
   return (
     <div>

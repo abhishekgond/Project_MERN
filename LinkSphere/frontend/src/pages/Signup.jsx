@@ -9,8 +9,8 @@ export const Signup = () => {
   const navigate = useNavigate();
   const { serverUrl } = useContext(AuthDataContext); // to Accesing context api
   const { userData, setUserData } = useContext(userDataContext);
-  const [FirstName, setFirstName] = useState("");
-  const [LastName, setLastName] = useState("");
+  const [firstName, setfirstName] = useState("");
+  const [lastName, setlastName] = useState("");
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,21 +28,23 @@ export const Signup = () => {
       const res = await axios.post(
         serverUrl + "/api/auth/signup",
         {
-          FirstName,
-          LastName,
+          firstName,
+          lastName,
           userName,
           email,
           password,
         },
         { withCredentials: true }
       );
-      setUserData(res.data.user);
       navigate("/");
-      console.log(res);
+      /// ther may be an error
+      setUserData(res.userData); //
+      // console.log("res.data  ::: " + res.data);
+      // console.log(res);
       setMessage(res.data.message || "Signup successful!");
       setLoding(false);
-      setFirstName("");
-      setLastName("");
+      setfirstName("");
+      setlastName("");
       setUserName("");
       setEmail("");
       setPassword("");
@@ -75,17 +77,17 @@ export const Signup = () => {
             type="text"
             name="firstName"
             placeholder="First Name"
-            value={FirstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            value={firstName}
+            onChange={(e) => setfirstName(e.target.value)}
             className="w-full px-4 py-4 text-lg border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
           <input
             type="text"
-            name="LastName"
+            name="lastName"
             placeholder="Last Name"
-            value={LastName}
-            onChange={(e) => setLastName(e.target.value)}
+            value={lastName}
+            onChange={(e) => setlastName(e.target.value)}
             className="w-full px-4 py-4 text-lg border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />

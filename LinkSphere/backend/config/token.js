@@ -4,6 +4,8 @@ const genToken = async (userId) => {
     const token = jwt.sign({ userId }, process.env.JWT_SECRETKEY, {
       expiresIn: "7d",
     });
+    // console.log(token);
+    return token;
   } catch (error) {
     console.log(error);
   }

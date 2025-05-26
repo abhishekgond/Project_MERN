@@ -1,14 +1,14 @@
 import jwt from "jsonwebtoken";
-import genToken  from "../config/token.js";
+import genToken from "../config/token.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 export const signUp = async (req, res) => {
   try {
-    const { FirstName, LastName, email, userName, password } = req.body;
+    const { firstName, lastName, email, userName, password } = req.body;
 
     // 1. Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
       return res
         .status(400)
         .json({ message: "User already exists with this email" });
@@ -34,16 +34,16 @@ export const signUp = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 3. Create new user
-    const newUser = await User.create({
-      FirstName,
-      LastName,
-      email,
+    const user = await User.create({
+      firstName,
+      lastName,
       userName,
+      email,
       password: hashedPassword,
     });
 
     // 4. Generate JWT token
-    const token = genToken(newUser._id);
+    const token = genToken(user._id);
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000, // mili second
@@ -51,17 +51,7 @@ export const signUp = async (req, res) => {
       secure: process.env.NODE_ENVIRONMENT === "production",
     });
     // 5. Respond with user and token
-    return res.status(201).json({
-      message: "Signup successful",
-      user: {
-        id: newUser._id,
-        fullName: newUser.fullName,
-        userName: newUser.userName,
-        email: newUser.email,
-        password: newUser.password,
-      },
-      token,
-    });
+    return res.status(201).json({ user });
   } catch (error) {
     console.error("Signup error:", error);
     res.status(500).json({ message: "Server error" });
@@ -70,16 +60,14 @@ export const signUp = async (req, res) => {
 
 export const logIn = async (req, res) => {
   try {
-    const { identifier, password } = req.body; // identifier can be email or username
+    const { email, password } = req.body; // identifier can be email or username
 
-    if (!identifier || !password) {
+    if (!email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     // Find user by email or username
-    const user = await User.findOne({
-      $or: [{ email: identifier }, { username: identifier }],
-    });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -92,7 +80,8 @@ export const logIn = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = genToken(user._id);
+    const token = await genToken(user._id);
+    // console.log("Token ", token);
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000, // mili second
@@ -100,16 +89,7 @@ export const logIn = async (req, res) => {
       secure: process.env.NODE_ENVIRONMENT === "production",
     });
     // Send response
-    return res.status(200).json({
-      message: "Login successful",
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        username: user.username,
-        email: user.email,
-      },
-      token,
-    });
+    return res.status(200).json({ user });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Server error" });
@@ -118,11 +98,12 @@ export const logIn = async (req, res) => {
 
 export const logOut = async (req, res) => {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    res.clearCookie("token");
+    // res.clearCookie("token", {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENVIRONMENT === "production",
+    //   sameSite: "strict",
+    // });
     res
       .status(200)
       .json({ message: "Logged out successfully. Cookie cleared." });

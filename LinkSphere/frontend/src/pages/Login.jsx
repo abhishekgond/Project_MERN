@@ -9,7 +9,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const { serverUrl } = useContext(AuthDataContext);
 
-  const [identifier, setIdentifier] = useState(""); // Username or Email
+  const [email, setemail] = useState(""); // Username or Email
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,20 +20,20 @@ export const Login = () => {
     setLoading(true);
     setError("");
     setMessage("");
-
+    navigate("/");
     try {
       const res = await axios.post(
         `${serverUrl}/api/auth/login`,
         {
-          identifier,
+          email,
           password,
         },
         { withCredentials: true }
       );
-      console.log(res);
+      // console.log(res);
       setMessage(res.data.message || "Login successful");
       setLoading(false);
-      setIdentifier("");
+      setemail("");
       setPassword("");
       // Optional: Save token
       // localStorage.setItem("token", res.data.token);
@@ -63,23 +63,13 @@ export const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-5">
           <input
             type="text"
-            name="identifier"
+            name="email"
             placeholder="Email or Username"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            value={email}
+            onChange={(e) => setemail(e.target.value)}
             className="w-full px-4 py-4 text-lg border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-
-          {/* <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-4 text-lg border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          /> */}
           <div className="relative">
             <input
               type={show ? "text" : "password"}

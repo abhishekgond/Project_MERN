@@ -30,6 +30,7 @@ export const isAuth = (req, res, next) => {
 
   try {
     const verified = jwt.verify(token, process.env.JWT_SECRETKEY);
+    console.log(verified);
     req.userId = verified.userId;
     next();
   } catch (error) {
