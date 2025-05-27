@@ -40,15 +40,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    about: {
+    introduction: {
       type: String,
-      default: "",
+      default: "My Nae is Abhishek Kumar Gond I am From Gorakhour",
     },
     location: {
       type: String,
-      default: "",
+      default: "India",
     },
-    skills: [{ type: String }],
+    skills: [{ type: String, default: "Html,CSS,js " }],
     experience: [
       {
         title: { type: String, required: true },

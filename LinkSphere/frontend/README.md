@@ -11,4 +11,10 @@ Currently, two official plugins are available:
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
-1:49:00
+SOme Steps To apload Image
+![alt text](image.png)
+
+1.Taking Image From Frontend
+2. After multer middleware  jo temprary folder mai disk stor folder  main stor kardega kardega  
+3. after disk storsge we store path on the cloudinary after multer remove local storage image 
+4. after cloudinary give us url then we show image 
