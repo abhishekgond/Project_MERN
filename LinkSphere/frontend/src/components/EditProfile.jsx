@@ -121,7 +121,7 @@ function EditProfile() {
                 type="submit"
                 className="rounded-md bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                Add
+                Add New Skills 
               </button>
             </form>
           </div>
