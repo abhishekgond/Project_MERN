@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IoSearchSharp } from "react-icons/io5";
-import logo from "../assets/linkSphere_logo.png";
+import logo from "../assets/linkSphere_logo.svg";
 import { FaHome } from "react-icons/fa";
 import { FaUserGroup } from "react-icons/fa6";
 import { IoNotifications } from "react-icons/io5";

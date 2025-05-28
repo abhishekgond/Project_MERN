@@ -13,23 +13,9 @@ import EditProfile from "../components/EditProfile";
 function Home() {
   const { userData, seetUserData, edit, setedit } = useContext(userDataContext);
   return (
-    <div className="w-full min-h-[100vh] flex bg-[#f0efe7]  justify-center items-center gap-[20px]">
+    <div className="w-full  min-h-[90vh] flex bg-[#f0efe7]  justify-center items-center gap-[13px]">
       {edit && <EditProfile />}
       <Nav />
-      {/* <div className="flex flex-col md:flex-row md:flex-wrap lg:flex-nowrap gap-4 px-4">
-        //{/* Left Sidebar */}
-      {/* <div className="w-full md:w-1/2 lg:w-1/4">
-          <LeftSidebar />
-        </div> */}
-      {/* Create Post */}
-      {/* <div className="w-full md:w-1/2 lg:w-1/2">
-          <CreatePost />
-        </div> */}
-      {/* Right Sidebar: On medium it wraps below, on large it stays in row }
-        <div className="w-full md:w-full lg:w-1/4">
-          <RightSidebar />
-        </div>
-      </div> */}
       <div className="w-full min-h-[100vh] flex bg-[#f0efe7]  justify-center items-start lg:pt-[100px] gap-[20px] flex-col lg:flex-row px-[54px] sm:mt-[56px] md:mt-[10px]">
         <div className="w-full lg:w-[25%] min-h-[400px] bg-white shadow-lg">
           {/* Banner */}
@@ -55,8 +41,8 @@ function Home() {
             <img src={dp} alt="Profile" className="h-full" />
 
             {/* FaPlus icon inside profile image at bottom-right */}
-            <div className="absolute bottom-2 right-1 bg-white p-[4px] rounded-full shadow-lg cursor-pointer bg-blue-500 ">
-              <FaPlus className=" text-xs text-white" />
+            <div className="absolute bottom-2 right-1 bg-white p-[4px] rounded-full shadow-lg cursor-pointer">
+              <FaPlus className=" text-xs text-blue-600" />
             </div>
           </div>
           <div className="border p-4 rounded-md bg-white shadow-sm">
@@ -108,10 +94,13 @@ function Home() {
           </div>
           {/* Taking Input From The user */}
         </div>
-        <div className="w-full lg:w-[50%] min-h-[200px] bg-[white]  shadow-lg rounded p-[10px]"></div>
-        <div className="w-full lg:w-[25%] min-h-[200px] bg-white shadow-lg rounded p-[10px] block md:hidden lg:block">
+        {/* <div className="w-full lg:w-[50%] max-h-[500px]  bg-[#f0efe7] shadow-lg rounded p-4 overflow-auto"> */}
+        <CreatePost className="w-full " />
+        {/* </div> */}
+        {/* <div className="w-full lg:w-[25%] min-h-[200px] bg-white shadow-lg rounded p-[10px] block md:hidden lg:block">
           {/* Content here */}
-        </div>
+        {/* </div>  */}
+        <RightSidebar className=" w-full" />
       </div>
     </div>
   );
