@@ -51,45 +51,29 @@ const userSchema = new mongoose.Schema(
     skills: [{ type: String, default: "Html,CSS,js " }],
     experience: [
       {
-        title: {
-          type: String,
-          required: true,
-          default: "5 years in the amazon",
-        },
-        company: { type: String, required: true, default: "amazon" },
+        title: { type: String, required: true },
+        company: { type: String, required: true },
         location: String,
-        from: { type: Date, required: true, default: 2023 },
+        from: { type: Date, required: true },
         to: Date,
         current: { type: Boolean, default: false },
-        description: {
-          type: String,
-          default: "I am Working at amazon since 2025",
-        },
+        description: String,
+        description: { type: String },
       },
     ],
     education: [
       {
-        school: {
-          type: String,
-          default: "Moti Lal Nehru National Institute of technology",
-        },
-        degree: {
-          type: String,
-          default: "MCA(Master Of Computer Application)",
-        },
-        fieldOfStudy: { type: String, default: "Computer Science" },
-        from: { type: Date, required: true, default: 2023 },
-        to: { type: Date, default: 2026 },
+        school: { type: String },
+        degree: { type: String },
+        fieldOfStudy: { type: String },
+        from: { type: Date, required: true },
+        to: Date,
         current: { type: Boolean, default: false },
-        description: { type: String, default: "Completed my Masters" },
+        description: String,
       },
     ],
-    location: { type: String, default: "India" },
-    gender: {
-      type: String,
-      enum: ["male", "female", "other"],
-      default: "male",
-    },
+    location: { type: String },
+    gender: { type: String, enum: ["male", "female", "other"] },
     connections: [
       {
         type: mongoose.Schema.Types.ObjectId,

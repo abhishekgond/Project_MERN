@@ -4,7 +4,7 @@ import { MdArticle } from "react-icons/md";
 import dp from "../assets/dp.webp";
 const CreatePost = () => {
   return (
-    <div className="w-full h-[140px] mx-auto p-3 bg-white rounded-xl shadow border lg:w-[50%] max-h-[500px]  bg-[#f0efe7] shadow-lg rounded p-4 overflow-auto">
+    <div className="w-[520px] h-[120px] mx-auto p-3 bg-white rounded-xl shadow border mt-[80px]">
       {/* Top: Profile + Input */}
       <div className="flex items-center gap-3">
         <img
@@ -19,7 +19,7 @@ const CreatePost = () => {
       </div>
 
       {/* Bottom: Action Buttons */}
-      <div className="flex justify-around mt-8 text-sm text-gray-600">
+      <div className="flex justify-around mt-5 text-sm text-gray-600">
         <button className="flex items-center gap-1 hover:text-blue-600">
           <FaVideo className="text-green-600" size={18} />
           <span>Video</span>
