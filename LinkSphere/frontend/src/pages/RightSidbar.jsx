@@ -30,7 +30,7 @@ const RightSidebar = () => {
   ];
 
   return (
-    <div className="w-[387px] mt-[80px] bg-white rounded-xl shadow-sm border p-4 text-sm">
+    <div className="w-[25%]  bg-white rounded-xl shadow-sm border p-4 text-sm">
       <div className="flex items-center justify-between mb-2">
         <h2 className="font-semibold">LinkedIn News</h2>
         <FaInfoCircle className="text-gray-500 text-xs" />
