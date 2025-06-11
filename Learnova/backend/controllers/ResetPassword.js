@@ -113,7 +113,7 @@ export const resetPassword = async (req, res) => {
       {
         token, // Replace with tokenHash if token is hashed
         resetPasswordExpires: { $gt: Date.now() },
-      },   
+      },
       {
         password: hashedPassword,
         token: undefined,
