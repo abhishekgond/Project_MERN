@@ -1,15 +1,27 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { v4 as uuId } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("");
   const [userName, setUserName] = useState("");
+  const navigate = useNavigate();
   const generateRoomId = (e) => {
     e.preventDefault();
     const newRoomId = uuId();
     setRoomId(newRoomId);
     toast.success("Room Id Created successfully");
+  };
+
+  const joinRoom = (e) => {
+    e.preventDefault();
+    if (!roomId || !userName) {
+      toast.error("Please enter both room id and user name");
+    }
+    // Here you can call your API to join the room
+    navigate(`/editor/${roomId}`, { state: { userName } });
+    toast.success("Room Is Created Succesfully ");
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white">
@@ -41,6 +53,7 @@ export default function Home() {
           />
           <button
             type="submit"
+            onClick={joinRoom}
             className="w-full py-2 bg-green-600 hover:bg-green-700 transition rounded font-semibold"
           >
             JOIN
