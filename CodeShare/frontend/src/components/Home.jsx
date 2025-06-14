@@ -18,10 +18,12 @@ export default function Home() {
     e.preventDefault();
     if (!roomId || !userName) {
       toast.error("Please enter both room id and user name");
+      navigate("/");
+    } else {
+      // Here you can call your API to join the room
+      navigate(`/editor/${roomId}`, { state: { userName } });
+      toast.success("Room Is Created Succesfully ");
     }
-    // Here you can call your API to join the room
-    navigate(`/editor/${roomId}`, { state: { userName } });
-    toast.success("Room Is Created Succesfully ");
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white">

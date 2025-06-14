@@ -32,10 +32,13 @@ const Editor = ({
   defaultCode = "",
   theme = "dracula",
   language = "javascript",
+  socket,
+  roomId,
 }) => {
   const textAreaRef = useRef(null);
   const editorRef = useRef(null);
   const debounceRef = useRef(null);
+  const isRemoteChange = useRef(false); // prevent feedback loop
 
   const modeMap = {
     javascript: "javascript",
@@ -119,6 +122,17 @@ const Editor = ({
     };
   };
 
+  // Join the room when the component mounts
+  useEffect(() => {
+    if (socket && roomId) {
+      socket.emit("join-room", { roomId });
+
+      return () => {
+        socket.off("join-room");
+      };
+    }
+  }, [socket, roomId]);
+
   useEffect(() => {
     if (!textAreaRef.current) return;
 
@@ -144,7 +158,6 @@ const Editor = ({
     editor.getWrapperElement().style.height = "100%";
     editorRef.current = editor;
 
-    // 🔁 Enable live hint on every key press with debounce
     editor.on("inputRead", (cm) => {
       clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => {
@@ -153,11 +166,46 @@ const Editor = ({
         } else {
           cm.showHint();
         }
-      }, 150); // delay to avoid overwhelming input
+      }, 150);
     });
 
-    return () => editor.toTextArea();
-  }, [theme, language, defaultCode]);
+    // Real-time syncing
+    editor.on("change", (cm) => {
+      if (isRemoteChange.current) return;
+      const newCode = cm.getValue();
+      if (socket && roomId) {
+        socket.emit("code-change", { roomId, code: newCode });
+      }
+    });
+
+    // Receive remote code updates
+    if (socket) {
+      socket.on("code-change", ({ code }) => {
+        if (code !== editor.getValue()) {
+          isRemoteChange.current = true;
+          const cursor = editor.getCursor();
+          editor.setValue(code);
+          editor.setCursor(cursor); // maintain user cursor position
+          isRemoteChange.current = false;
+        }
+      });
+
+      // Handle initial code sync for new user
+      socket.on("code-sync", ({ code }) => {
+        if (code !== editor.getValue()) {
+          isRemoteChange.current = true;
+          editor.setValue(code);
+          isRemoteChange.current = false;
+        }
+      });
+    }
+
+    return () => {
+      editor.toTextArea();
+      socket?.off("code-change");
+      socket?.off("code-sync");
+    };
+  }, [theme, language, defaultCode, socket, roomId]);
 
   return (
     <div className="w-full h-full">
