@@ -11,8 +11,12 @@ import Editor from "./Editor";
 import { availableLanguages } from "./Language";
 import { availableThemes, themeMap, formatThemeName } from "./Theme";
 import { initSocket } from "../config/socket";
+import ChatBox from "./ChatBox";
 
 export default function EditorPage() {
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+
   const [clients, setClients] = useState([]);
   const [theme, setTheme] = useState("dracula");
   const [language, setLanguage] = useState("javascript");
@@ -51,6 +55,23 @@ export default function EditorPage() {
     }
   };
 
+  const sendChatMessage = () => {
+    if (chatInput.trim()) {
+      socketRef.current?.emit("chat-message", {
+        roomId,
+        message: chatInput.trim(),
+      });
+      setChatInput("");
+    }
+  };
+
+  const handleChatKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  };
+
   useEffect(() => {
     if (!userName) {
       toast.error("Username missing.");
@@ -66,7 +87,6 @@ export default function EditorPage() {
         socketRef.current.on("connect_failed", handleError);
 
         socketRef.current.on("connect", () => {
-          // Emit the "join" event with roomId and userName
           socketRef.current.emit("join", { roomId, userName });
         });
 
@@ -90,6 +110,23 @@ export default function EditorPage() {
         socketRef.current.on("disconnect", () => {
           toast("Disconnected from the server.", { icon: "🔌" });
         });
+
+        socketRef.current.on(
+          "chat-message",
+          ({ userName, message, timestamp }) => {
+            setChatMessages((prev) => [
+              ...prev,
+              {
+                userName,
+                message,
+                timestamp: new Date(timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+              },
+            ]);
+          }
+        );
       } catch (err) {
         handleError(err);
       }
@@ -104,9 +141,8 @@ export default function EditorPage() {
   }, [roomId, userName, navigate]);
 
   if (!location.state) return <Navigate to="/" />;
-
   return (
-    <div className="flex flex-col h-screen bg-[#121212] text-white">
+    <div className="flex flex-col h-screen bg-[#121212] text-white relative">
       {/* Header */}
       <header className="flex justify-between items-center px-6 py-3 bg-zinc-900 border-b border-zinc-800 shadow-md">
         <div className="text-xl sm:text-2xl font-bold text-green-400">
@@ -133,7 +169,7 @@ export default function EditorPage() {
             <h2 className="text-lg font-semibold mb-4 border-b border-zinc-700 pb-2">
               Members ({clients.length})
             </h2>
-            <ul className="space-y-3 overflow-y-auto max-h-[calc(100vh-200px)]">
+            <ul className="space-y-3 overflow-y-auto max-h-[calc(100vh-200px)] pr-1">
               {clients.map((client) => (
                 <li key={client.socketId}>
                   <Client name={client.userName} />
@@ -157,10 +193,10 @@ export default function EditorPage() {
           </div>
         </aside>
 
-        {/* Main Editor Section */}
-        <main className="flex-1 flex flex-col p-4 space-y-4 overflow-hidden">
-          {/* Theme & Language Selection */}
-          <div className="flex flex-wrap gap-4">
+        {/* Main Section */}
+        <main className="flex-1 flex flex-col p-4 space-y-4 overflow-hidden relative">
+          {/* Theme and Language Select */}
+          <div className="flex flex-wrap gap-6 items-end">
             <div className="flex flex-col">
               <label htmlFor="themeSelect" className="text-sm font-medium mb-1">
                 Theme
@@ -211,6 +247,15 @@ export default function EditorPage() {
               roomId={roomId}
             />
           </div>
+
+          {/* ChatBox Fixed */}
+          <ChatBox
+            chatMessages={chatMessages}
+            chatInput={chatInput}
+            setChatInput={setChatInput}
+            handleChatKeyDown={handleChatKeyDown}
+            sendChatMessage={sendChatMessage}
+          />
         </main>
       </div>
     </div>
