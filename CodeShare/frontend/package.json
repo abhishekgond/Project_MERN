@@ -30,6 +30,7 @@
     "@uiw/codemirror-themes-all": "^4.23.13",
     "codemirror": "^5.65.19",
     "express": "^5.1.0",
+    "lucide-react": "^0.515.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.5.2",
