@@ -1,3 +1,4 @@
+// export default Editor;
 import React, { useEffect, useRef } from "react";
 import CodeMirror from "codemirror";
 
@@ -18,6 +19,8 @@ import "codemirror/addon/edit/matchbrackets";
 import "codemirror/addon/edit/closebrackets";
 import "codemirror/addon/edit/closetag";
 import "codemirror/addon/edit/matchtags";
+import "codemirror/addon/comment/comment";
+import "codemirror/addon/selection/active-line";
 
 // Hint / Autocomplete Addons
 import "codemirror/addon/hint/show-hint";
@@ -27,6 +30,13 @@ import "codemirror/addon/hint/css-hint";
 import "codemirror/addon/hint/html-hint";
 import "codemirror/addon/hint/xml-hint";
 import "codemirror/addon/hint/anyword-hint";
+
+// Search Addons
+import "codemirror/addon/search/search";
+import "codemirror/addon/search/searchcursor";
+
+// Tooltip
+import "codemirror/addon/selection/mark-selection";
 
 const Editor = ({
   defaultCode = "",
@@ -38,7 +48,7 @@ const Editor = ({
   const textAreaRef = useRef(null);
   const editorRef = useRef(null);
   const debounceRef = useRef(null);
-  const isRemoteChange = useRef(false); // prevent feedback loop
+  const isRemoteChange = useRef(false);
 
   const modeMap = {
     javascript: "javascript",
@@ -122,14 +132,10 @@ const Editor = ({
     };
   };
 
-  // Join the room when the component mounts
   useEffect(() => {
     if (socket && roomId) {
       socket.emit("join-room", { roomId });
-
-      return () => {
-        socket.off("join-room");
-      };
+      return () => socket.off("join-room");
     }
   }, [socket, roomId]);
 
@@ -146,51 +152,50 @@ const Editor = ({
       matchTags: { bothTags: true },
       tabSize: 2,
       indentWithTabs: false,
+      styleActiveLine: true,
+      lineWrapping: true,
       extraKeys: {
-        "Ctrl-F": (cm) => {
-          cm.execCommand("selectAll");
-          cm.execCommand("indentAuto");
-        },
+        "Ctrl-F": (cm) => cm.execCommand("find"),
+        "Ctrl-/": (cm) => cm.execCommand("toggleComment"),
+        "Ctrl-Space": "autocomplete",
       },
     });
 
-    editor.setValue(defaultCode);
+    const persisted = localStorage.getItem(`code-${roomId}`);
+    if (persisted) editor.setValue(persisted);
+    else editor.setValue(defaultCode);
+
     editor.getWrapperElement().style.height = "100%";
     editorRef.current = editor;
 
-    editor.on("inputRead", (cm) => {
-      clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        if (["python", "cpp", "java"].includes(language)) {
-          cm.showHint({ hint: customHint });
-        } else {
-          cm.showHint();
-        }
-      }, 150);
+    editor.on("inputRead", (cm, change) => {
+      if (!cm.state.completionActive && change.text[0].match(/\w/)) {
+        CodeMirror.commands.autocomplete(cm, customHint, {
+          completeSingle: false,
+        });
+      }
     });
 
-    // Real-time syncing
     editor.on("change", (cm) => {
       if (isRemoteChange.current) return;
       const newCode = cm.getValue();
+      localStorage.setItem(`code-${roomId}`, newCode);
       if (socket && roomId) {
         socket.emit("code-change", { roomId, code: newCode });
       }
     });
 
-    // Receive remote code updates
     if (socket) {
       socket.on("code-change", ({ code }) => {
         if (code !== editor.getValue()) {
           isRemoteChange.current = true;
-          const cursor = editor.getCursor();
+          const prevScroll = editor.getScrollInfo().top;
           editor.setValue(code);
-          editor.setCursor(cursor); // maintain user cursor position
+          editor.scrollTo(null, prevScroll);
           isRemoteChange.current = false;
         }
       });
 
-      // Handle initial code sync for new user
       socket.on("code-sync", ({ code }) => {
         if (code !== editor.getValue()) {
           isRemoteChange.current = true;
@@ -208,7 +213,7 @@ const Editor = ({
   }, [theme, language, defaultCode, socket, roomId]);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full rounded-lg overflow-hidden">
       <textarea ref={textAreaRef} defaultValue={defaultCode} />
     </div>
   );

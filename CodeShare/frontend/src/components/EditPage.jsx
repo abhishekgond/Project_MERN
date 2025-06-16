@@ -13,6 +13,8 @@ import { initSocket } from "../config/socket";
 import ChatBox from "./ChatBox";
 import { Menu, MessageCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { MdOutlineComputer } from "react-icons/md";
+import SidebarButton from "./SidebarButton";
 
 export default function EditorPage() {
   const [chatMessages, setChatMessages] = useState([]);
@@ -22,6 +24,7 @@ export default function EditorPage() {
   const [language, setLanguage] = useState("javascript");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
+  const [mode, setMode] = useState("dark"); // Dark or Light mode
 
   const socketRef = useRef(null);
   const location = useLocation();
@@ -140,89 +143,113 @@ export default function EditorPage() {
   if (!location.state) return <Navigate to="/" />;
 
   return (
-    <div className="flex flex-col h-screen bg-[#121212] text-white relative">
+    <div
+      className={`flex flex-col h-screen ${
+        mode === "dark" ? "bg-[#121212] text-white" : "bg-white text-black"
+      } relative`}
+    >
       {/* Header */}
-      <header className="flex justify-between items-center px-4 py-3 bg-zinc-900 border-b border-zinc-800 shadow-md relative">
-        <div className="flex items-center gap-3 w-full">
+      <header
+        className={`flex justify-between items-center px-4 py-3 ${
+          mode === "dark"
+            ? "bg-zinc-900 text-white border-zinc-800"
+            : "bg-gray-100 text-black border-gray-300"
+        } border-b shadow-md relative`}
+      >
+        <div className="flex items-center space-x-3 gap-3 w-full">
           <button
-            className="block lg:hidden text-white"
+            className="block lg:hidden"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             <Menu size={28} />
           </button>
 
-          <div className="text-xl sm:text-2xl font-bold text-green-400 ml-auto sm:ml-0">
-            💻 CODECAST
+          <div className="text-xl sm:text-2xl font-bold text-green-400 flex items-center gap-2 ml-auto sm:ml-0">
+            <MdOutlineComputer className="text-2xl" />
+            CODECAST
           </div>
         </div>
 
-        <div className="flex-col items-end text-sm hidden sm:flex sm:text-right">
-          <p className="text-zinc-300">
-            <span className="font-semibold text-white">Room:</span> {roomId}
-          </p>
-          <p className="text-zinc-300">
-            <span className="font-semibold text-white">You:</span> {userName}
-          </p>
-          <p className="text-zinc-300">
-            <span className="font-semibold text-white">Users:</span>{" "}
-            {clients.length}
-          </p>
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex flex-col text-sm text-right">
+            <p>
+              <span className="font-semibold">Room:</span> {roomId}
+            </p>
+            <p>
+              <span className="font-semibold">You:</span> {userName}
+            </p>
+            <p>
+              <span className="font-semibold">Users:</span> {clients.length}
+            </p>
+          </div>
+          {/* Theme Toggle */}
+          <button
+            onClick={() => setMode(mode === "dark" ? "light" : "dark")}
+            className={`ml-4 px-3 py-1 border rounded text-sm ${
+              mode === "dark"
+                ? "bg-zinc-800 border-zinc-600 hover:bg-zinc-700"
+                : "bg-gray-200 border-gray-400 hover:bg-gray-300"
+            }`}
+          >
+            {mode === "dark" ? "🌞 Light Mode" : "🌙 Dark Mode"}
+          </button>
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden ">
+        {/* Sidebar */}
         <aside
           className={`${
             sidebarOpen ? "block" : "hidden"
-          } lg:block absolute lg:static z-20 w-[260px] bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col justify-between transition-all`}
+          } lg:block absolute lg:static z-20 w-64 ${
+            mode === "dark"
+              ? "bg-zinc-900 text-white border-zinc-800"
+              : "bg-gray-100 text-black border-gray-300"
+          } p-4 flex flex-col justify-between transition-all duration-300`}
         >
           <div className="space-y-2 mb-4 lg:hidden">
-            <button
-              className="w-full py-2 bg-green-600 hover:bg-green-700 rounded"
+            <SidebarButton
               onClick={copyRoomId}
-            >
-              📋 Copy Room ID
-            </button>
-            <button
-              className="w-full py-2 bg-red-600 hover:bg-red-700 rounded"
+              color="green"
+              label="📋 Copy Room ID"
+            />
+            <SidebarButton
               onClick={handleLeave}
-            >
-              🚪 Leave Room
-            </button>
+              color="red"
+              label="🚪 Leave Room"
+            />
           </div>
 
           <div className="flex-1 overflow-y-auto">
-            <h2 className="text-lg font-semibold mb-4 border-b border-zinc-700 pb-2">
+            <h2 className="text-lg font-semibold mb-4 border-b pb-2">
               Members ({clients.length})
             </h2>
-            <ul className="space-y-3 overflow-y-auto max-h-[calc(100vh-200px)] pr-1">
+            <ul className="space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
               {clients.map((client) => (
                 <li key={client.socketId}>
-                  <Client name={client.userName} />
+                  <Client name={client.userName} mode={mode} />
                 </li>
               ))}
             </ul>
           </div>
 
           <div className="space-y-2 mt-6 hidden lg:block">
-            <button
-              className="w-full py-2 bg-green-600 hover:bg-green-700 rounded"
+            <SidebarButton
               onClick={copyRoomId}
-            >
-              📋 Copy Room ID
-            </button>
-            <button
-              className="w-full py-2 bg-red-600 hover:bg-red-700 rounded"
+              color="green"
+              label="📋 Copy Room ID"
+            />
+            <SidebarButton
               onClick={handleLeave}
-            >
-              🚪 Leave Room
-            </button>
+              color="red"
+              label="🚪 Leave Room"
+            />
           </div>
         </aside>
 
         {/* Main Section */}
         <main className="flex-1 flex flex-col p-4 space-y-4 overflow-hidden relative">
-          {/* Theme + Language Selectors + Show Chat */}
+          {/* Theme + Language Selectors + Chat Toggle */}
           <div className="flex flex-wrap gap-6 items-end justify-between">
             <div className="flex gap-6">
               <div className="flex flex-col">
@@ -236,7 +263,11 @@ export default function EditorPage() {
                   id="themeSelect"
                   value={theme}
                   onChange={(e) => setTheme(e.target.value)}
-                  className="bg-zinc-800 text-white px-3 py-2 rounded-md border border-zinc-700 focus:outline-none"
+                  className={`px-3 py-2 rounded-md border focus:outline-none ${
+                    mode === "dark"
+                      ? "bg-zinc-800 text-white border-zinc-700"
+                      : "bg-white text-black border-gray-400"
+                  }`}
                 >
                   {availableThemes.map((t) => (
                     <option key={t} value={t} className="text-black">
@@ -257,7 +288,11 @@ export default function EditorPage() {
                   id="languageSelect"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="bg-zinc-800 text-white px-3 py-2 rounded-md border border-zinc-700 focus:outline-none"
+                  className={`px-3 py-2 rounded-md border focus:outline-none ${
+                    mode === "dark"
+                      ? "bg-zinc-800 text-white border-zinc-700"
+                      : "bg-white text-black border-gray-400"
+                  }`}
                 >
                   {availableLanguages.map((lang) => (
                     <option key={lang} value={lang} className="text-black">
@@ -268,19 +303,56 @@ export default function EditorPage() {
               </div>
             </div>
 
-            <div className="relative z-50">
+            {/* <div className="relative z-50 ">
+              <label
+                htmlFor="languageSelect"
+                className="text-sm font-medium mb-1"
+              >
+                chat
+              </label>
               <button
                 onClick={() => setChatVisible(!chatVisible)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
+                className={`flex items-center px-6 py-2.5 rounded-md border focus:outline-none ${
+                  mode === "dark"
+                    ? "bg-zinc-800 text-white border-zinc-700 hover:bg-zinc-700"
+                    : "bg-white text-black border-gray-400 hover:bg-gray-300"
+                }`}
               >
-                <MessageCircle size={18} />
-                {chatVisible ? "Hide Chat" : "Show Chat"}
+                <MessageCircle size={18} className="mr-2" />
+                <span className="hidden sm:inline">
+                  {chatVisible ? "Hide Chat" : "Show Chat"}
+                </span>
+              </button>
+            </div> */}
+            <div className="relative z-50 flex flex-col items-center">
+              <label
+                htmlFor="languageSelect"
+                className="text-sm font-medium mb-1 text-center"
+              >
+                Chat
+              </label>
+              <button
+                onClick={() => setChatVisible(!chatVisible)}
+                className={`flex items-center px-6 py-2.5 rounded-md border focus:outline-none ${
+                  mode === "dark"
+                    ? "bg-zinc-800 text-white border-zinc-700 hover:bg-zinc-700"
+                    : "bg-white text-black border-gray-400 hover:bg-gray-300"
+                }`}
+              >
+                <MessageCircle size={18} className="mr-2" />
+                <span className="hidden sm:inline">
+                  {chatVisible ? "Hide " : "Show"}
+                </span>
               </button>
             </div>
           </div>
 
           {/* Editor */}
-          <div className="flex-1 overflow-hidden rounded-lg border border-zinc-700 relative">
+          <div
+            className={`flex-1 overflow-hidden rounded-lg border ${
+              mode === "dark" ? "border-zinc-700" : "border-gray-300"
+            }`}
+          >
             <Editor
               defaultCode={`// Start Your Code ...`}
               theme={themeMap[theme] || themeMap["dracula"]}
@@ -290,7 +362,7 @@ export default function EditorPage() {
             />
           </div>
 
-          {/* ChatBox Floating Bottom Right */}
+          {/* ChatBox */}
           {chatVisible && (
             <div className="fixed bottom-4 right-4 z-50 w-full max-w-xs sm:max-w-sm md:max-w-md">
               <ChatBox

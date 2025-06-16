@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { v4 as uuId } from "uuid";
 import { useNavigate } from "react-router-dom";
+import { MdOutlineComputer } from "react-icons/md";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("");
@@ -29,7 +30,9 @@ export default function Home() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white">
       <div className="bg-zinc-900 p-8 rounded-xl shadow-lg w-[350px] sm:w-[400px]">
         <div className="flex flex-col items-center mb-6">
-          <div className="text-3xl mb-2">🖥️</div>
+          <div className="text-3xl mb-2">
+            <MdOutlineComputer />
+          </div>
           <h1 className="text-xl font-bold">CODECAST</h1>
         </div>
         <h2 className="text-lg font-semibold text-center mb-6">
