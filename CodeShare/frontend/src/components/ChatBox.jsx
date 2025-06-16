@@ -165,7 +165,7 @@ export default function ChatBox({
           onTouchStart={() => setIsResizing(true)}
           className="absolute bottom-2 right-2 w-6 h-6 cursor-nwse-resize text-zinc-500 hover:text-green-400 transition-transform duration-200 hover:scale-110"
         >
-          <IoExpand size={18} />
+          <IoExpand size={19} />
         </div>
       )}
     </div>
