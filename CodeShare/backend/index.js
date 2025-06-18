@@ -4,48 +4,49 @@ import dotenv from "dotenv";
 import http from "http";
 import cors from "cors";
 import { Server as SocketIOServer } from "socket.io";
-import { setupSocket } from "./config/socket.js"; // your socket handler
+import { setupSocket } from "./config/socket.js"; // Modularized socket handlers
 
-// Load .env variables
+// Load environment variables
 dotenv.config();
 
+// Create Express app
 const app = express();
 
-// CORS: must allow frontend domain
+// Middlewares
 app.use(
   cors({
-    origin: process.env.CLIENT_URL, // e.g., https://your-frontend.vercel.app
+    origin: process.env.CLIENT_URL || "*",
     methods: ["GET", "POST"],
     credentials: true,
   })
 );
+// console.log("frontend Url are  " + process.env.CLIENT_URL);
 
-// Express parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Create HTTP server
 const server = http.createServer(app);
 
-// Setup Socket.IO with same CORS origin
+// Setup Socket.IO with proper CORS config
 const io = new SocketIOServer(server, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL || "*",
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
-// Socket logic
+// Initialize socket logic
 setupSocket(io);
 
-// Test route to verify backend is alive
+// Default route for checking backend status
 app.get("/", (req, res) => {
   res.status(200).send("✅ Backend is running");
 });
 
-// Start server
+// Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  // console.log(`🚀 Server listening on ${PORT}`);
 });
