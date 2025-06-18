@@ -2,6 +2,7 @@
 import { io } from "socket.io-client";
 
 // Replace with your backend URL and port
+// const REACT_APP_BACKEND_URL = "http://localhost:3000";
 const REACT_APP_BACKEND_URL = "http://localhost:3000";
 
 export const initSocket = async () => {

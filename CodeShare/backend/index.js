@@ -273,7 +273,7 @@ app.use(
     credentials: true,
   })
 );
-console.log("frontend Url are  " + process.env.CLIENT_URL);
+// console.log("frontend Url are  " + process.env.CLIENT_URL);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -301,5 +301,5 @@ app.get("/", (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server listening on ${PORT}`);
+  // console.log(`🚀 Server listening on ${PORT}`);
 });
