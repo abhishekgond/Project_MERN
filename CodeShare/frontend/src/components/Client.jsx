@@ -52,11 +52,17 @@ function stringAvatar(name = "") {
 }
 
 // Reusable Client component
-function Client({ name }) {
+function Client({ name, mode = "dark" }) {
   return (
-    <div className="flex items-center space-x-2 cursor-pointer">
+    <div
+      className={`flex items-center space-x-2 cursor-pointer rounded-md shadow-sm ${
+        mode === "dark"
+          ? "bg-zinc-800 text-white"
+          : " text-black border border-gray-300"
+      }`}
+    >
       <Avatar {...stringAvatar(name)} />
-      <span className="text-white text-sm">{name}</span>
+      <span className="text-lg bold">{name}</span>
     </div>
   );
 }
