@@ -13,7 +13,7 @@ const courseSchema = new mongoose.Schema(
       required: [true, "Course description is required"],
     },
 
-    thumbnail: {
+    thumbnailimage: {
       type: String,
       required: [true, "Course thumbnail is required"],
     },
@@ -52,7 +52,7 @@ const courseSchema = new mongoose.Schema(
     tag: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Tag",
+        ref: "Tags",
       },
     ],
 

@@ -377,5 +377,3 @@ export const changePassword = async (req, res) => {
     });
   }
 };
-
-// 47:18
