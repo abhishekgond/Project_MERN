@@ -1,9 +1,8 @@
 import { io } from "socket.io-client";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const initSocket = async () => {
-  // console.log("Attempting to connect to Socket.IO server at:", BACKEND_URL);
 
   const socket = io(BACKEND_URL, {
     reconnection: true,
