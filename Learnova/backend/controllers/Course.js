@@ -1,13 +1,16 @@
 import Course from "../models/Course.js";
-import Tag from "../models/Tags.js";
+import Category from "../models/Category.js";
 import User from "../models/User.js";
 import { uploadImageToCloudinary } from "../utils/imageaploader.js";
 // creat Course Handler
 export const CreateCourse = async (req, res) => {
   try {
     // Destructure fields from request body
-    const { courseName, coursedescription, whatYouWillLearn, price, tag } =
+    const { courseName, coursedescription, whatYouWillLearn, price, Category } =
       req.body;
+
+    const thumbnail = req.files.thumbnailimage;
+    s;
 
     // Validate text fields
     if (
@@ -15,7 +18,7 @@ export const CreateCourse = async (req, res) => {
       !coursedescription ||
       !whatYouWillLearn ||
       !price ||
-      !tag
+      !Category
     ) {
       return res.status(400).json({
         success: false,
@@ -39,8 +42,6 @@ export const CreateCourse = async (req, res) => {
       });
     }
 
-    const thumbnail = req.files.thumbnailimage;
-
     // Validate image type
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
     if (!allowedTypes.includes(thumbnail.mimetype)) {
@@ -61,6 +62,7 @@ export const CreateCourse = async (req, res) => {
     }
 
     // check for Instructor
+    // TODo : Is There User id and Instructor id are Same
     const userId = req.user.id;
     const instrudtorDetails = await User.findById(userId);
     console.log("Instructor Details " + instrudtorDetails);
@@ -71,11 +73,11 @@ export const CreateCourse = async (req, res) => {
       });
     }
 
-    const tagDetails = await Tag.findById(tag);
-    if (!tagDetails) {
+    const CategoryDetails = await Category.findById(Category);
+    if (!CategoryDetails) {
       return res.status(400).json({
         success: false,
-        message: "Tag not found.",
+        message: "Category not found.",
       });
     }
 
@@ -84,11 +86,43 @@ export const CreateCourse = async (req, res) => {
       thumbnail,
       process.env.FOLDER_NAME
     );
-    // 1:9:00 videos - 3
+
+    // Create new Entry for new Course
+    const newCourse = await Course.create({
+      courseName,
+      coursedescription,
+      thumbnailimage: thumbnailImage.secure_url,
+      instructor: instrudtorDetails._id,
+      whatYouWillLearn,
+      price,
+      Category: CategoryDetails._id,
+    });
+    // add new Course in instructor Schema
+    await User.findByIdAndUpdate(
+      { _id: instrudtorDetails._id },
+      {
+        $push: {
+          courses: newCourse._id,
+        },
+      },
+      { new: true }
+    );
+
+    // Update Category Schema
+    await Category.findByIdAndUpdate(
+      { _id: CategoryDetails._id },
+      {
+        $push: {
+          courses: newCourse._id,
+        },
+      },
+      { new: true }
+    );
 
     return res.status(200).json({
       success: true,
-      message: "Course validated successfully. Ready for next step.",
+      message: "Course Created successfully. Ready for next step.",
+      data: newCourse,
     });
   } catch (error) {
     console.error("CreateCourse error:", error);
@@ -98,3 +132,36 @@ export const CreateCourse = async (req, res) => {
     });
   }
 };
+
+// Get allCourse
+exports.getAllCourses = async (req, res) => {
+  try {
+    const allCourses = await Course.find(
+      {},
+      {
+        courseName: true,
+        price: true,
+        thumbnailimage: true,
+        instructor: true,
+        ratingAndReviews: true,
+        studentsEnrolled: true,
+      }
+    )
+      .populate("instructor")
+      .exec();
+    return res.status(200).json({
+      success: true,
+      message: "Courses Retrieved successfully.",
+      data: allCourses,
+    });
+  } catch (error) {
+    console.log("get all Course error " + error);
+    return res.status(500).json({
+      success: false,
+      message: "Can Not Fetch all Course ",
+      error: error.message,
+    });
+  }
+};
+
+// Creating sections
