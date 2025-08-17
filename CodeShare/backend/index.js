@@ -14,7 +14,7 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "*",
+    origin: process.env.CLIENT_URL || "https://showyourcode.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
   })
